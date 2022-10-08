@@ -15,29 +15,18 @@ public interface UserRepository extends JpaRepository<Users, String> {
 
     boolean existsByUserName(String userName);
 
-    @Query(value = " select u from Users u" +
-            " where not u.staffCode = :staffCode " +
-            "and u.location.code = :location" +
-            " and u.state <> 'INACTIVE' " +
-            "order by u.firstName asc, u.staffCode desc")
-    Page<Users> findAllByOrderByFirstNameAsc(Pageable pageable, @Param("staffCode") String staffCode, @Param("location") String location);
-
     @Query(value = "select staff_code from users where staff_code LIKE 'SD%'", nativeQuery = true)
     List<String> findAllStaffCode();
 
-
     @Query(value = "from Users u " +
-        "where ( lower(u.staffCode) like concat('%', :text, '%')  OR lower(concat(u.firstName,' ',u.lastName)) like concat('%', :text, '%')) "+
-        "and u.location.code = :locationCode " +
-        "and u.state <> 'INACTIVE' " +
-        "order by u.firstName asc , u.staffCode desc ")
+            "where ( lower(u.staffCode) like concat('%', :text, '%')  OR lower(concat(u.firstName,' ',u.lastName)) like concat('%', :text, '%')) " +
+            "and u.location.code = :locationCode " +
+            "and u.state <> 'INACTIVE'")
     List<Users> findByStaffCodeOrNameAndLocationCode(@Param("text") String text, String locationCode);
-
 
     int countUsersByFirstNameAndLastNameLikeIgnoreCase(String firstName, String lastName);
 
     Optional<Users> findByStaffCode(String staffCode);
-
 
     @Query(value = "select u from Users u " +
             "where ( lower(u.staffCode) like concat('%', :text, '%') or " +
@@ -45,8 +34,7 @@ public interface UserRepository extends JpaRepository<Users, String> {
             "and lower(u.location.code) = :location " +
             "and upper(u.role.name) in :roles " +
             "and u.staffCode <> :loggedStaffCode " +
-            "and u.state <> 'INACTIVE' " +
-            "order by u.firstName asc, u.staffCode desc ", nativeQuery = false)
+            "and u.state <> 'INACTIVE' ", nativeQuery = false)
     Page<Users> searchByStaffCodeOrNameWithRole(@Param("text") String text,
                                                 @Param("loggedStaffCode") String loggedStaffCode,
                                                 @Param("location") String adminLocation,

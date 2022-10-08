@@ -82,7 +82,7 @@ public class AssetServiceImpl implements AssetService {
 			throw new ResourceNotFoundException(String.format("user.not.found.with.code:%s", dto.getUserId()));
 		}
 		if (dto.getStates().size() == 0 && dto.getCategoryIds().size() == 0) {
-			pageAsset = assetRepository.getListAssetBySearchs(dto.getUserId(), dto.getKeyword(), pageable);
+			pageAsset = assetRepository.getListAssetBySearch(dto.getUserId(), dto.getKeyword(), pageable);
 			totalItems = pageAsset.getTotalPages();
 		} else if (dto.getStates().size() > 0) {
 			List<AssetState> assetState = assetMapper.mapperListStates(dto.getStates());
