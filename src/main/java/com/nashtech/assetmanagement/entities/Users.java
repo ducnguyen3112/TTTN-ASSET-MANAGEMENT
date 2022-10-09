@@ -52,13 +52,15 @@ public class Users {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
-
-
+    
     @ManyToOne
     @JoinColumn(name = "location_id")
     private Location location;
 
     @OneToMany(mappedBy = "assignedBy")
     private List<Assignment> assignments;
+
+    @OneToMany(mappedBy = "requestedAssetBy")
+    private List<RequestAsset> requestAssets;
 
 }

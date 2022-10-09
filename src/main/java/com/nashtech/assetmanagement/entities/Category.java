@@ -25,4 +25,7 @@ public class Category {
 
     @OneToMany(mappedBy = "category")
     private List<Asset> assets;
+
+    @OneToMany(mappedBy = "category")
+    private List<RequestAsset> requestAssets;
 }

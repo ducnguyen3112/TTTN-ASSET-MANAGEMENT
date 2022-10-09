@@ -3,6 +3,7 @@ package com.nashtech.assetmanagement.exception.handlers;
 import com.nashtech.assetmanagement.dto.response.ErrorResponseDto;
 import com.nashtech.assetmanagement.dto.response.ErrorResponseMessageDto;
 import com.nashtech.assetmanagement.exception.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ResourceNotFoundException.class})
@@ -33,6 +35,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleUnwantedException(Exception ex) {
         ErrorResponseMessageDto errorResponse = new ErrorResponseMessageDto(
                 HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), new Date());
+        log.warn(ex.getMessage());
         return new ResponseEntity<>(errorResponse,
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
