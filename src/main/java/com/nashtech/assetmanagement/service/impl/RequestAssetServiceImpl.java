@@ -8,6 +8,9 @@ import com.nashtech.assetmanagement.entities.Category;
 import com.nashtech.assetmanagement.entities.RequestAsset;
 import com.nashtech.assetmanagement.entities.Users;
 import com.nashtech.assetmanagement.enums.RequestAssetState;
+import com.nashtech.assetmanagement.exception.RequestNotAcceptException;
+import com.nashtech.assetmanagement.exception.ResourceNotFoundException;
+import com.nashtech.assetmanagement.exception.UnauthorizedException;
 import com.nashtech.assetmanagement.mapper.RequestAssetMapper;
 import com.nashtech.assetmanagement.repositories.CategoryRepository;
 import com.nashtech.assetmanagement.repositories.RequestAssetRepository;
@@ -68,6 +71,7 @@ public class RequestAssetServiceImpl implements RequestAssetService {
                 requestAssetMapper.requestAssetToResponseDto(requestAsset);
         responseDto.setUserName(requestAsset.getRequestedAssetBy().getUserName());
         responseDto.setCategoryName(requestAsset.getCategory().getName());
+        responseDto.setCategoryId(requestAsset.getCategory().getId());
         return responseDto;
     }
 
@@ -92,8 +96,13 @@ public class RequestAssetServiceImpl implements RequestAssetService {
 
     @Override
     public MessageResponse deleteRequestAsset(Long requestAssetId) {
+        String userName =
+                authenticationService.getUser().getUserName();
         RequestAsset requestAsset =
                 requestAssetRepository.findById(requestAssetId).orElseThrow(() -> new NotFoundException("Can't find request for asset with ID: " + requestAssetId));
+        if (userName.equals(requestAsset.getRequestedAssetBy().getUserName())) {
+            throw new UnauthorizedException("You do not have permission");
+        }
         if (requestAsset.getState() != RequestAssetState.REQUEST_ASSET_WAITING_FOR_APPROVAL || requestAsset.getAssignment() != null) {
             return new MessageResponse(HttpStatus.BAD_REQUEST, "Can't not delete this " +
                     "request for asset", new Date());
@@ -101,5 +110,30 @@ public class RequestAssetServiceImpl implements RequestAssetService {
         requestAssetRepository.delete(requestAsset);
         return new MessageResponse(HttpStatus.OK, "Delete request for asset success",
                 new Date());
+    }
+
+    @Override
+    public RequestAssetResponseDto editRequestAsset(Long requestAssetId, RequestAssetRequestDto requestDto) {
+        String userName =
+                authenticationService.getUser().getUserName();
+        RequestAsset requestAsset =
+                requestAssetRepository.findById(requestAssetId).orElseThrow(() -> new ResourceNotFoundException("Can't find request for asset with ID: " + requestAssetId));
+        if (!userName.equals(requestAsset.getRequestedAssetBy().getUserName())) {
+            throw new UnauthorizedException("You do not have permission");
+        }
+        if (requestAsset.getState() != RequestAssetState.REQUEST_ASSET_WAITING_FOR_APPROVAL || requestAsset.getAssignment() != null) {
+            throw new RequestNotAcceptException("Can't edit the request when request approved");
+        }
+        requestAsset.setNote(requestAsset.getNote());
+        requestAsset.setQuantity(requestAsset.getQuantity());
+        Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Can't find category with ID:" + requestDto.getCategoryId()));
+        requestAsset.setCategory(category);
+        requestAssetRepository.save(requestAsset);
+        RequestAssetResponseDto responseDto =
+                requestAssetMapper.requestAssetToResponseDto(requestAsset);
+        responseDto.setUserName(requestAsset.getRequestedAssetBy().getUserName());
+        responseDto.setCategoryName(requestAsset.getCategory().getName());
+        responseDto.setCategoryId(requestAsset.getCategory().getId());
+        return responseDto;
     }
 }

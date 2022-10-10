@@ -31,6 +31,7 @@ public class RequestAssetMapper {
                             RequestAssetResponseDto.class);
                     temp.setCategoryName(requestAsset.getCategory().getName());
                     temp.setUserName(requestAsset.getRequestedAssetBy().getUserName());
+                    temp.setCategoryId(requestAsset.getCategory().getId());
                     if (requestAsset.getState()== RequestAssetState.REQUEST_ASSET_WAITING_FOR_APPROVAL){
                         temp.setState("Waiting for approval");
                     } else if (requestAsset.getState()== RequestAssetState.REQUEST_ASSET_REJECTED) {

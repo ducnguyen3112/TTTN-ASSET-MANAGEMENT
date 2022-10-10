@@ -13,4 +13,6 @@ public interface RequestAssetService {
     RequestAssetListResponseDto getListUserRequestForAsset(int pageSize, int page);
 
     MessageResponse deleteRequestAsset(Long requestAssetId);
+
+    RequestAssetResponseDto editRequestAsset(Long requestAssetId, RequestAssetRequestDto requestDto);
 }
