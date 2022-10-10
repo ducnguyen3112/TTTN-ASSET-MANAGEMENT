@@ -15,4 +15,6 @@ public interface RequestAssetService {
     MessageResponse deleteRequestAsset(Long requestAssetId);
 
     RequestAssetResponseDto editRequestAsset(Long requestAssetId, RequestAssetRequestDto requestDto);
+
+    RequestAssetResponseDto changeStateRequestAsset(Long requestAssetId, String state);
 }

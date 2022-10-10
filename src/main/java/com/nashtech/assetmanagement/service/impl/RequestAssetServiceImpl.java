@@ -8,6 +8,7 @@ import com.nashtech.assetmanagement.entities.Category;
 import com.nashtech.assetmanagement.entities.RequestAsset;
 import com.nashtech.assetmanagement.entities.Users;
 import com.nashtech.assetmanagement.enums.RequestAssetState;
+import com.nashtech.assetmanagement.exception.BadRequestException;
 import com.nashtech.assetmanagement.exception.RequestNotAcceptException;
 import com.nashtech.assetmanagement.exception.ResourceNotFoundException;
 import com.nashtech.assetmanagement.exception.UnauthorizedException;
@@ -128,6 +129,37 @@ public class RequestAssetServiceImpl implements RequestAssetService {
         requestAsset.setQuantity(requestAsset.getQuantity());
         Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Can't find category with ID:" + requestDto.getCategoryId()));
         requestAsset.setCategory(category);
+        requestAssetRepository.save(requestAsset);
+        RequestAssetResponseDto responseDto =
+                requestAssetMapper.requestAssetToResponseDto(requestAsset);
+        responseDto.setUserName(requestAsset.getRequestedAssetBy().getUserName());
+        responseDto.setCategoryName(requestAsset.getCategory().getName());
+        responseDto.setCategoryId(requestAsset.getCategory().getId());
+        return responseDto;
+    }
+    @Override
+    public RequestAssetResponseDto changeStateRequestAsset(Long requestAssetId, String state) {
+        String userName =
+                authenticationService.getUser().getUserName();
+        RequestAsset requestAsset =
+                requestAssetRepository.findById(requestAssetId).orElseThrow(() -> new ResourceNotFoundException("Can't find request for asset with ID: " + requestAssetId));
+        if (!userName.equals(requestAsset.getRequestedAssetBy().getUserName())) {
+            throw new UnauthorizedException("You do not have permission");
+        }
+        String currentState = requestAsset.getState().getFieldDescription();
+        if (!currentState.contains(state)) {
+            if (state.toLowerCase().contains(RequestAssetState.REQUEST_ASSET_WAITING_FOR_APPROVAL.getFieldDescription())) {
+                requestAsset.setState(RequestAssetState.REQUEST_ASSET_WAITING_FOR_APPROVAL);
+            } else if (state.toLowerCase().contains(RequestAssetState.REQUEST_ASSET_APPROVED.getFieldDescription())) {
+                requestAsset.setState(RequestAssetState.REQUEST_ASSET_APPROVED);
+            } else if (state.toLowerCase().contains(RequestAssetState.REQUEST_ASSET_REJECTED.getFieldDescription())) {
+                requestAsset.setState(RequestAssetState.REQUEST_ASSET_REJECTED);
+            }else{
+                throw new BadRequestException("State not valid");
+            }
+        }else{
+            throw new BadRequestException("Can't change state to current state");
+        }
         requestAssetRepository.save(requestAsset);
         RequestAssetResponseDto responseDto =
                 requestAssetMapper.requestAssetToResponseDto(requestAsset);
