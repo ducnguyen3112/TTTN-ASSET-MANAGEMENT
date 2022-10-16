@@ -10,14 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Slf4j
 @RestController
 @RequestMapping("/users/api/request-assets")
 public class RequestAssetUserController {
 
-    private RequestAssetService requestAssetService;
+    private final RequestAssetService requestAssetService;
 
     @Autowired
     public RequestAssetUserController(RequestAssetService requestAssetService) {
@@ -41,5 +39,11 @@ public class RequestAssetUserController {
     @ResponseStatus(HttpStatus.OK)
     public MessageResponse deleteRequestAsset(@PathVariable("id") Long id){
         return requestAssetService.deleteRequestAsset(id);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public RequestAssetResponseDto editUserRequestAsset(@PathVariable("id") Long id,@RequestBody RequestAssetRequestDto requestDto){
+        return requestAssetService.editRequestAsset(id,requestDto);
     }
 }

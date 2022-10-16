@@ -25,4 +25,5 @@ public class RequestAssetResponseDto {
     private String state;
     private String userName;
     private String categoryName;
+    private String categoryId;
 }
