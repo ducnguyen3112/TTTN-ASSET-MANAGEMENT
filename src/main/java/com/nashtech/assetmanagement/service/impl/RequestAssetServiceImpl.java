@@ -1,6 +1,7 @@
 package com.nashtech.assetmanagement.service.impl;
 
 import com.nashtech.assetmanagement.dto.request.RequestAssetRequestDto;
+import com.nashtech.assetmanagement.dto.request.StateRequestAssetDto;
 import com.nashtech.assetmanagement.dto.response.MessageResponse;
 import com.nashtech.assetmanagement.dto.response.RequestAssetListResponseDto;
 import com.nashtech.assetmanagement.dto.response.RequestAssetResponseDto;
@@ -8,6 +9,8 @@ import com.nashtech.assetmanagement.entities.Category;
 import com.nashtech.assetmanagement.entities.RequestAsset;
 import com.nashtech.assetmanagement.entities.Users;
 import com.nashtech.assetmanagement.enums.RequestAssetState;
+import com.nashtech.assetmanagement.exception.BadRequestException;
+import com.nashtech.assetmanagement.exception.RequestNotAcceptException;
 import com.nashtech.assetmanagement.mapper.RequestAssetMapper;
 import com.nashtech.assetmanagement.repositories.CategoryRepository;
 import com.nashtech.assetmanagement.repositories.RequestAssetRepository;
@@ -101,5 +104,28 @@ public class RequestAssetServiceImpl implements RequestAssetService {
         requestAssetRepository.delete(requestAsset);
         return new MessageResponse(HttpStatus.OK, "Delete request for asset success",
                 new Date());
+    }
+
+    @Override
+    public RequestAssetResponseDto changeStateRequestAsset(Long requestAssetId,
+                                                           StateRequestAssetDto state) {
+        RequestAsset requestAsset =
+                requestAssetRepository.findById(requestAssetId).orElseThrow(() -> new NotFoundException("Can't find request for asset with ID: " + requestAssetId));
+        if (requestAsset.getState() != RequestAssetState.REQUEST_ASSET_WAITING_FOR_APPROVAL || requestAsset.getAssignment() != null) {
+            throw new RequestNotAcceptException("Request is not accepted");
+        }
+        if (state.getState().contains("REJECTED")){
+            requestAsset.setState(RequestAssetState.REQUEST_ASSET_REJECTED);
+        }else if (state.getState().contains("APPROVED")){
+            requestAsset.setState(RequestAssetState.REQUEST_ASSET_APPROVED);
+        }else{
+            throw new BadRequestException("Request is not valid");
+        }
+        requestAsset = requestAssetRepository.save(requestAsset);
+        RequestAssetResponseDto responseDto =
+                requestAssetMapper.requestAssetToResponseDto(requestAsset);
+        responseDto.setUserName(requestAsset.getRequestedAssetBy().getUserName());
+        responseDto.setCategoryName(requestAsset.getCategory().getName());
+        return responseDto;
     }
 }
