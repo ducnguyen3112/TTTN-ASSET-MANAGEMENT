@@ -26,16 +26,14 @@ public interface RequestReturningRepository extends JpaRepository<RequestReturni
 	@Query("SELECT b FROM RequestReturning b where (b.state in :state) and (:returnedDate is null or b.returnedDate = STR_TO_DATE(:returnedDate, '%Y/%m/%d')) "
 			+ "and ((lower(b.assignment.asset.code) like lower(concat('%', :search, '%')))  or "
 			+ "  (lower(b.assignment.asset.name) like lower(concat('%', :search, '%')))  or"
-			+ "  (lower(b.requestedBy.userName) like lower(concat('%', :search, '%'))))"
-			+ "  ORDER BY b.acceptedBy DESC NULLS LAST")
+			+ "  (lower(b.requestedBy.userName) like lower(concat('%', :search, '%'))))")
 	Page<RequestReturning> getListSortByAcceptedByDESC(@Param("state") List<RequestReturningState> state,
 													   @Param("returnedDate") String returnedDate, @Param("search") String search, Pageable pageable);
 
 	@Query("SELECT b FROM RequestReturning b where (b.state in :state) and (:returnedDate is null or b.returnedDate = STR_TO_DATE(:returnedDate, '%Y/%m/%d')) "
 			+ "and ((lower(b.assignment.asset.code) like lower(concat('%', :search, '%')))  or "
 			+ "  (lower(b.assignment.asset.name) like lower(concat('%', :search, '%')))  or"
-			+ "  (lower(b.requestedBy.userName) like lower(concat('%', :search, '%'))))"
-			+ "  ORDER BY b.acceptedBy ASC NULLS FIRST")
+			+ "  (lower(b.requestedBy.userName) like lower(concat('%', :search, '%'))))")
 	Page<RequestReturning> getListSortByAcceptedByASC(@Param("state") List<RequestReturningState> state,
 													  @Param("returnedDate") String returnedDate, @Param("search") String search, Pageable pageable);
 

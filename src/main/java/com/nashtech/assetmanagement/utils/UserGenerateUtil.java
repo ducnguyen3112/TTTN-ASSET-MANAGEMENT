@@ -44,7 +44,6 @@ public class UserGenerateUtil {
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         int month = calendar.get(Calendar.MONTH) + 1;
         int year = calendar.get(Calendar.YEAR);
-        log.info("birthday: " + birthDate + "\nday: " + day + "\nmonth: " + month + "\nyear:" + year);
         String monthString;
         String dayString;
         if (day < 10) {
@@ -57,6 +56,7 @@ public class UserGenerateUtil {
         } else {
             monthString = "" + month;
         }
+        log.info(userName + "@" + dayString + monthString + year);
         return userName + "@" + dayString + monthString + year;
     }
 

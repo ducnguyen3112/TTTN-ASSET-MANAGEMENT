@@ -41,5 +41,4 @@ public class RequestReturning {
     @Column
     @Enumerated(EnumType.STRING)
     private RequestReturningState state;
-
 }

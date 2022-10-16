@@ -5,7 +5,6 @@ import java.util.Map;
 
 public enum RequestReturningState {
 	COMPLETED, WAITING_FOR_RETURNING;
-	
 	public static Map<String, String> getRequestReturningState(){
 		HashMap<String, String> hashMap = new HashMap<>();
 		hashMap.put("COMPLETED", "Completed");
