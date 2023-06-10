@@ -40,10 +40,4 @@ public class RequestAssetUserController {
     public MessageResponse deleteRequestAsset(@PathVariable("id") Long id){
         return requestAssetService.deleteRequestAsset(id);
     }
-
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public RequestAssetResponseDto editUserRequestAsset(@PathVariable("id") Long id,@RequestBody RequestAssetRequestDto requestDto){
-        return requestAssetService.editRequestAsset(id,requestDto);
-    }
 }
