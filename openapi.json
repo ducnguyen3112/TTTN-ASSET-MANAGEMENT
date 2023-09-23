@@ -1,0 +1,141 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "TPS Application API",
+    "description": "OpenAPI 3.0 for TPS",
+    "contact": {
+      "name": "tps",
+      "url": "https://tpssoft.com/",
+      "email": "admin@tpssoft.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api2-dev.kardsys.com/marketing"
+    }
+  ],
+  "paths": {
+    "/api/health/put": {
+      "put": {
+        "tags": [
+          "check-health-controller"
+        ],
+        "operationId": "checkHealthPut",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ads/{konnectPakId}/pause": {
+      "put": {
+        "tags": [
+          "AdsCampaign"
+        ],
+        "summary": "Pause Ad Campaign by Konnect Pak",
+        "operationId": "pauseAdCampaignByKonnectPakId",
+        "parameters": [
+          {
+            "name": "konnectPakId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorMessage": {
+        "type": "object",
+        "properties": {
+          "errorMessage": {
+            "type": "string"
+          },
+          "errorCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "request": {
+            "type": "string"
+          },
+          "requestType": {
+            "type": "string"
+          },
+          "customMessage": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
